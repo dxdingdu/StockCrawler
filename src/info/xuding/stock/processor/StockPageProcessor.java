@@ -6,12 +6,14 @@ import java.util.Set;
 
 import javax.annotation.Resource;
 
+import org.apache.http.client.HttpClient;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import org.springframework.stereotype.Component;
 
 import info.xuding.stock.dao.StockDao;
 import info.xuding.stock.model.TopBill;
+import info.xuding.stock.utils.StockPriceUtils;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
@@ -45,7 +47,6 @@ public class StockPageProcessor implements PageProcessor {
 		}
 		String stockCode = page.getHtml().$("#pageStockCode").xpath("tidyText()").toString();
 		String stockDate = page.getHtml().$("select.select option[selected]").xpath("tidyText()").toString();
-		// page.addTargetRequest("http://qd.10jqka.com.cn/quote.php?return=json&cate=real&type=stock&code="+stockCode);
 		Selectable table = page.getHtml().$(".m_table").nodes().get(0);
 		List<Selectable> list = table.$("tbody > tr").nodes();
 		for (int i = 0; i < list.size(); i++) {
@@ -62,10 +63,7 @@ public class StockPageProcessor implements PageProcessor {
 				topBill.setSellPercent(selectable.xpath("tr/td[6]/text()").toString());
 				topBill.setNetAmount(Double.valueOf(selectable.xpath("tr/td[7]/text()").toString()));
 				topBill.setTurnover(Double.valueOf(selectable.xpath("tr/td[8]/text()").toString()));
-				if (topBill.getTurnover() != 0) {
-					double price = (topBill.getBuyAmount() + topBill.getSellAmount()) * 100 / topBill.getTurnover();
-					topBill.setPrice(price);
-				}
+				topBill.setPrice(StockPriceUtils.getStockPrice(stockCode));
 				stockDao.add(topBill);
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
