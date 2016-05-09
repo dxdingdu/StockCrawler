@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.annotation.Resource;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import com.alibaba.fastjson.JSON;
@@ -12,6 +13,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import info.xuding.stock.dao.StockDao;
 import info.xuding.stock.model.TopBill;
+import info.xuding.stock.utils.NumberUtils;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.processor.PageProcessor;
@@ -57,14 +59,17 @@ public class StockPageProcessor implements PageProcessor {
 			List<Selectable> list = table.$("tbody > tr").nodes();
 			for (int i = 0; i < list.size(); i++) {
 				Selectable selectable = list.get(i);
-				TopBill topBill = new TopBill(stockDate, stockName, stockCode, Double.valueOf(closingPrice), 0,
-						Double.valueOf(priceChange));
+				TopBill topBill = new TopBill(stockDate, stockName, stockCode, NumberUtils.doubleValue(closingPrice), 0,
+						NumberUtils.doubleValue(priceChange));
 				topBill.setOrganization(selectable.xpath("tr/td[2]/div[1]/a[2]/text()").toString());
-				topBill.setBuyAmount(Double.valueOf(selectable.xpath("tr/td[3]/text()").toString()));
+				if (StringUtils.isEmpty(topBill.getOrganization())) {
+					continue;
+				}
+				topBill.setBuyAmount(NumberUtils.doubleValue(selectable.xpath("tr/td[3]/text()").toString()));
 				topBill.setBuyPercent(selectable.xpath("tr/td[4]/text()").toString());
-				topBill.setSellAmount(Double.valueOf(selectable.xpath("tr/td[5]/text()").toString()));
+				topBill.setSellAmount(NumberUtils.doubleValue(selectable.xpath("tr/td[5]/text()").toString()));
 				topBill.setSellPercent(selectable.xpath("tr/td[6]/text()").toString());
-				topBill.setNetAmount(Double.valueOf(selectable.xpath("tr/td[7]/text()").toString()));
+				topBill.setNetAmount(NumberUtils.doubleValue(selectable.xpath("tr/td[7]/text()").toString()));
 				stockDao.add(topBill);
 			}
 		}
@@ -73,14 +78,17 @@ public class StockPageProcessor implements PageProcessor {
 			List<Selectable> list = table.$("tbody > tr").nodes();
 			for (int i = 0; i < list.size(); i++) {
 				Selectable selectable = list.get(i);
-				TopBill topBill = new TopBill(stockDate, stockName, stockCode, Double.valueOf(closingPrice), 0,
-						Double.valueOf(priceChange));
+				TopBill topBill = new TopBill(stockDate, stockName, stockCode, NumberUtils.doubleValue(closingPrice), 0,
+						NumberUtils.doubleValue(priceChange));
 				topBill.setOrganization(selectable.xpath("tr/td[2]/div[1]/a[2]/text()").toString());
-				topBill.setBuyAmount(Double.valueOf(selectable.xpath("tr/td[3]/text()").toString()));
+				if (StringUtils.isEmpty(topBill.getOrganization())) {
+					continue;
+				}
+				topBill.setBuyAmount(NumberUtils.doubleValue(selectable.xpath("tr/td[3]/text()").toString()));
 				topBill.setBuyPercent(selectable.xpath("tr/td[4]/text()").toString());
-				topBill.setSellAmount(Double.valueOf(selectable.xpath("tr/td[5]/text()").toString()));
+				topBill.setSellAmount(NumberUtils.doubleValue(selectable.xpath("tr/td[5]/text()").toString()));
 				topBill.setSellPercent(selectable.xpath("tr/td[6]/text()").toString());
-				topBill.setNetAmount(Double.valueOf(selectable.xpath("tr/td[7]/text()").toString()));
+				topBill.setNetAmount(NumberUtils.doubleValue(selectable.xpath("tr/td[7]/text()").toString()));
 				stockDao.add(topBill);
 			}
 		}
@@ -88,7 +96,7 @@ public class StockPageProcessor implements PageProcessor {
 
 	@Override
 	public Site getSite() {
-		return Site.me().setRetryTimes(3).setSleepTime(0);
+		return Site.me().setRetryTimes(5).setTimeOut(60 * 1000).setSleepTime(2000);
 	}
 
 	// public static void main(String[] args) {

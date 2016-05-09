@@ -46,6 +46,6 @@ public class MainCrawler {
 			}
 			calendar.add(Calendar.DAY_OF_YEAR, -1);
 		} while (!DateUtils.isSameDay(calendar.getTime(), ts));
-		Spider.create(stockPageProcessor).addUrl(urls.toArray(new String[] {})).thread(5).run();
+		Spider.create(stockPageProcessor).addUrl(urls.toArray(new String[] {})).thread(1).run();
 	}
 }
