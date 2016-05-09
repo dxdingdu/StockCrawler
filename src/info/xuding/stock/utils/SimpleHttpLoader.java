@@ -15,15 +15,10 @@ public class SimpleHttpLoader {
 		HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
 		CloseableHttpClient closeableHttpClient = httpClientBuilder.build();
 		HttpGet httpGet = new HttpGet(url);
-		System.out.println(httpGet.getRequestLine());
 		try {
-			// 执行get请求
 			HttpResponse httpResponse = closeableHttpClient.execute(httpGet);
-			// 获取响应消息实体
 			HttpEntity entity = httpResponse.getEntity();
-			// 响应状态
 			System.out.println("status:" + httpResponse.getStatusLine());
-			// 判断响应实体是否为空
 			if (entity != null) {
 				return EntityUtils.toString(entity);
 			}
@@ -31,7 +26,6 @@ public class SimpleHttpLoader {
 			e.printStackTrace();
 		} finally {
 			try {
-				// 关闭流并释放资源
 				closeableHttpClient.close();
 			} catch (IOException e) {
 				e.printStackTrace();
