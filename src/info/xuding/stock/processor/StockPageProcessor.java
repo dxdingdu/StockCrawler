@@ -7,13 +7,10 @@ import javax.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
-import com.alibaba.fastjson.JSONObject;
-
 import info.xuding.stock.dao.StockDao;
+import info.xuding.stock.model.StockInfo;
 import info.xuding.stock.model.TopBill;
-import info.xuding.stock.utils.NumberUtils;
+import info.xuding.stock.utils.StockInfoUtils;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.processor.PageProcessor;
@@ -26,77 +23,57 @@ import us.codecraft.webmagic.selector.Selectable;
 @Component
 public class StockPageProcessor implements PageProcessor {
 
+	private static final String DATA_URL = "(http://data.10jqka.com.cn/market/lhbcjmx/code/\\w+/)";
+
 	@Resource
 	private StockDao stockDao;
 
 	@Override
 	public void process(Page page) {
-		String jsonStr = page.getRawText();
-		if (jsonStr.startsWith("var ")) {
-			jsonStr = page.getRawText().substring(jsonStr.indexOf('=') + 1);
-			JSONObject jsonObject = JSON.parseObject(jsonStr);
-			JSONArray jsonArray = jsonObject.getJSONArray("data");
-			for (int i = 0; i < jsonArray.size(); i++) {
-				JSONObject stockObject = (JSONObject) jsonArray.get(i);
-				page.addTargetRequest("http://data.eastmoney.com/stock/lhb," + stockObject.getString("Tdate") + ","
-						+ stockObject.getString("SCode") + ".html");
-			}
+		String thisUrl = page.getUrl().toString();
+		String date = thisUrl.substring(thisUrl.indexOf("date/") + 5, thisUrl.indexOf("date/") + 15);
+		List<String> urlList = page.getHtml().$("#maintable > tbody > tr > td").links().regex(DATA_URL).all();
+		for (String str : urlList) {
+			str += "date/" + date + "/ajax/";
+			page.addTargetRequest(str);
 		}
-		String stockInfo = page.getHtml().$("div.tit a").xpath("tidyText()").toString();
+		String stockName = page.getHtml().$("div.stock_name h2 strong").xpath("tidyText()").toString();
+		if (stockName == null) {
+			return;
+		}
+		String stockCode = page.getHtml().$("#pageStockCode").xpath("tidyText()").toString();
+		StockInfo stockInfo = StockInfoUtils.getStockInfo(stockCode, date);
 		if (stockInfo == null) {
 			return;
 		}
-		String stockName = stockInfo.substring(0, stockInfo.indexOf('('));
-		String stockCode = stockInfo.substring(stockInfo.indexOf('(') + 1, stockInfo.lastIndexOf(')'));
-		String stockDate = page.getHtml().$("div.left.con-br").xpath("tidyText()").toString().substring(0, 10);
-		String closingPrice = page.getHtml().$("div.data-tips:nth-child(1) div.right > span:nth-child(1)")
-				.xpath("tidyText()").toString();
-		String priceChange = page.getHtml().$("div.data-tips:nth-child(1) div.right > span:nth-child(2)")
-				.xpath("tidyText()").toString();
-		priceChange = priceChange.substring(0, priceChange.length() - 2);
-		{
-			Selectable table = page.getHtml().$("#tab-2");
-			List<Selectable> list = table.$("tbody > tr").nodes();
-			for (int i = 0; i < list.size(); i++) {
+		Selectable table = page.getHtml().$(".m_table").nodes().get(0);
+		List<Selectable> list = table.$("tbody > tr").nodes();
+		for (int i = 0; i < list.size(); i++) {
+			try {
 				Selectable selectable = list.get(i);
-				TopBill topBill = new TopBill(stockDate, stockName, stockCode, NumberUtils.doubleValue(closingPrice), 0,
-						NumberUtils.doubleValue(priceChange));
-				topBill.setOrganization(selectable.xpath("tr/td[2]/div[1]/a[2]/text()").toString());
-				if (StringUtils.isEmpty(topBill.getOrganization())) {
+				String organization = selectable.xpath("/tr/td[2]/a/text()").toString();
+				if (StringUtils.isBlank(organization)) {
 					continue;
 				}
-				topBill.setBuyAmount(NumberUtils.doubleValue(selectable.xpath("tr/td[3]/text()").toString()));
+				TopBill topBill = new TopBill(stockName, stockInfo);
+				topBill.setOrganization(organization);
+				topBill.setBuyAmount(Double.valueOf(selectable.xpath("tr/td[3]/text()").toString()));
 				topBill.setBuyPercent(selectable.xpath("tr/td[4]/text()").toString());
-				topBill.setSellAmount(NumberUtils.doubleValue(selectable.xpath("tr/td[5]/text()").toString()));
+				topBill.setSellAmount(Double.valueOf(selectable.xpath("tr/td[5]/text()").toString()));
 				topBill.setSellPercent(selectable.xpath("tr/td[6]/text()").toString());
-				topBill.setNetAmount(NumberUtils.doubleValue(selectable.xpath("tr/td[7]/text()").toString()));
+				topBill.setNetAmount(Double.valueOf(selectable.xpath("tr/td[7]/text()").toString()));
+				topBill.setTurnover(Double.valueOf(selectable.xpath("tr/td[8]/text()").toString()));
 				stockDao.add(topBill);
-			}
-		}
-		{
-			Selectable table = page.getHtml().$("#tab-4");
-			List<Selectable> list = table.$("tbody > tr").nodes();
-			for (int i = 0; i < list.size(); i++) {
-				Selectable selectable = list.get(i);
-				TopBill topBill = new TopBill(stockDate, stockName, stockCode, NumberUtils.doubleValue(closingPrice), 0,
-						NumberUtils.doubleValue(priceChange));
-				topBill.setOrganization(selectable.xpath("tr/td[2]/div[1]/a[2]/text()").toString());
-				if (StringUtils.isEmpty(topBill.getOrganization())) {
-					continue;
-				}
-				topBill.setBuyAmount(NumberUtils.doubleValue(selectable.xpath("tr/td[3]/text()").toString()));
-				topBill.setBuyPercent(selectable.xpath("tr/td[4]/text()").toString());
-				topBill.setSellAmount(NumberUtils.doubleValue(selectable.xpath("tr/td[5]/text()").toString()));
-				topBill.setSellPercent(selectable.xpath("tr/td[6]/text()").toString());
-				topBill.setNetAmount(NumberUtils.doubleValue(selectable.xpath("tr/td[7]/text()").toString()));
-				stockDao.add(topBill);
+			} catch (Exception e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
 	}
 
 	@Override
 	public Site getSite() {
-		return Site.me().setRetryTimes(5).setTimeOut(60 * 1000).setSleepTime(2000);
+		return Site.me().setRetryTimes(3).setSleepTime(0);
 	}
 
 	// public static void main(String[] args) {

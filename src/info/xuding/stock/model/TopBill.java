@@ -13,7 +13,6 @@ public class TopBill {
 	String sellPercent; // 占总成交比例
 	double netAmount; // 净额/万
 	double turnover; // 成交量/手
-	double price; // 收盘价(计算)
 
 	String date; // 日期
 	String stockName; // 股票
@@ -21,7 +20,7 @@ public class TopBill {
 	double closingPrice; // 收盘价
 	double openingPrice; // 开盘价
 	double change; // 涨跌
-	
+
 	public TopBill(String date, String stockName, String stockCode, double closingPrice, double openingPrice,
 			double change) {
 		super();
@@ -31,6 +30,15 @@ public class TopBill {
 		this.closingPrice = closingPrice;
 		this.openingPrice = openingPrice;
 		this.change = change;
+	}
+
+	public TopBill(String stockName, StockInfo stockInfo) {
+		super();
+		this.date = stockInfo.stockDate;
+		this.stockName = stockName;
+		this.stockCode = stockInfo.stockCode;
+		this.closingPrice = stockInfo.closingPrice;
+		this.openingPrice = stockInfo.openingPrice;
 	}
 
 	public String getOrganization() {
@@ -135,14 +143,6 @@ public class TopBill {
 
 	public void setChange(double change) {
 		this.change = change;
-	}
-
-	public double getPrice() {
-		return price;
-	}
-
-	public void setPrice(double price) {
-		this.price = price;
 	}
 
 }

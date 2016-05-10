@@ -33,19 +33,18 @@ public class MainCrawler {
 		if (DateUtils.isSameDay(ts, calendar.getTime())) {
 			return;
 		}
-//		stockDao.setTs(calendar.getTime());
+		stockDao.setTs(calendar.getTime());
 		do {
 			if (calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY
 					&& calendar.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY) {
 				String dateStr = df.format(calendar.getTime());
-//				urls.add("http://data.10jqka.com.cn/market/longhu/date/" + dateStr
-//						+ "/cate/ALL/field/REMARK/page/1/order/desc/ajax/1");
-//				urls.add("http://data.10jqka.com.cn/market/longhu/date/" + dateStr
-//						+ "/cate/ALL/field/REMARK/page/2/order/desc/ajax/1");
-				urls.add("http://data.eastmoney.com/DataCenter_V3/stock2016/TradeDetail/pagesize=200,page=1,sortRule=-1,sortType=,startDate="+dateStr+",endDate="+dateStr+",gpfw=0,js=var%20data_tab_1.html");
+				urls.add("http://data.10jqka.com.cn/market/longhu/date/" + dateStr
+						+ "/cate/ALL/field/REMARK/page/1/order/desc/ajax/1");
+				urls.add("http://data.10jqka.com.cn/market/longhu/date/" + dateStr
+						+ "/cate/ALL/field/REMARK/page/2/order/desc/ajax/1");
 			}
 			calendar.add(Calendar.DAY_OF_YEAR, -1);
 		} while (!DateUtils.isSameDay(calendar.getTime(), ts));
-		Spider.create(stockPageProcessor).addUrl(urls.toArray(new String[] {})).thread(1).run();
+		Spider.create(stockPageProcessor).addUrl(urls.toArray(new String[] {})).thread(5).run();
 	}
 }
