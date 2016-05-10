@@ -18,7 +18,7 @@ public class SimpleHttpLoader {
 		try {
 			HttpResponse httpResponse = closeableHttpClient.execute(httpGet);
 			HttpEntity entity = httpResponse.getEntity();
-			System.out.println("status:" + httpResponse.getStatusLine());
+			System.out.println("status:" + httpResponse.getStatusLine() + " url:" + url);
 			if (entity != null) {
 				return EntityUtils.toString(entity);
 			}

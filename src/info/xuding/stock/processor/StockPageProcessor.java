@@ -73,7 +73,7 @@ public class StockPageProcessor implements PageProcessor {
 
 	@Override
 	public Site getSite() {
-		return Site.me().setRetryTimes(3).setSleepTime(0);
+		return Site.me().setRetryTimes(5).setSleepTime(200);
 	}
 
 	// public static void main(String[] args) {

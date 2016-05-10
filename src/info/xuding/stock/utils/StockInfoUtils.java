@@ -15,12 +15,12 @@ public class StockInfoUtils {
 	static Map<String, StockInfo> map = new HashMap<>();
 
 	public static StockInfo getStockInfo(String stockCode, String date) {
-		String key = stockCode +"_"+ date;
+		String key = stockCode + "_" + date;
 		if (map.containsKey(key)) {
 			return map.get(key);
 		} else {
 			String newStockCode;
-			if (stockCode.startsWith("60") || stockCode.startsWith("58")) {
+			if (stockCode.startsWith("60") || stockCode.startsWith("90") || stockCode.startsWith("58")) {
 				newStockCode = "sh" + stockCode;
 			} else {
 				newStockCode = "sz" + stockCode;
