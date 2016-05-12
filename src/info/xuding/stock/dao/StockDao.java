@@ -16,7 +16,7 @@ import info.xuding.stock.model.TopBill;
  */
 public interface StockDao {
 
-    @Insert("INSERT INTO `topbill_price` (`stockName`, `stockCode`, `date`, `closingPrice`, `openingPrice`, `change`, `organization`, `buyAmount`, `buyPercent`, `sellAmount`, `sellPercent`, `netAmount`, `turnover`)"
+    @Insert("INSERT INTO `topbill` (`stockName`, `stockCode`, `date`, `closingPrice`, `openingPrice`, `change`, `organization`, `buyAmount`, `buyPercent`, `sellAmount`, `sellPercent`, `netAmount`, `turnover`)"
             + " VALUES (#{stockName}, #{stockCode}, #{date}, #{closingPrice}, #{openingPrice}, #{change}, #{organization}, #{buyAmount}, #{buyPercent}, #{sellAmount}, #{sellPercent}, #{netAmount}, #{turnover});")
     public int add(TopBill topBill);
 
@@ -26,7 +26,7 @@ public interface StockDao {
     @Update("update ts_version set ts=#{date} where id=1")
     public void setTs(Date date);
 
-    @Select("select * from topbill_price")
+    @Select("select * from topbill")
     public List<TopBill> getTopBillList();
 
     @Select("select * from StockTransaction where sellDate")
