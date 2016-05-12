@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Select;
 import org.apache.ibatis.annotations.Update;
 
-import info.xuding.stock.model.StockTransaction;
+import info.xuding.stock.model.BillPairing;
 import info.xuding.stock.model.TopBill;
 
 /**
@@ -26,9 +26,13 @@ public interface StockDao {
     @Update("update ts_version set ts=#{date} where id=1")
     public void setTs(Date date);
 
-    @Select("select * from topbill")
-    public List<TopBill> getTopBillList();
+    @Select("select * from topbill where buyAmount>100 and organization!='机构专用' group by stockCode, date, organization")
+    public List<TopBill> getPayBillList();
 
-    @Select("select * from StockTransaction where sellDate")
-    public StockTransaction getStockSell(String stockCode, String organization, Date buyDate);
+    @Select("select * from topbill where sellAmount>100 and organization!='机构专用' group by stockCode, date, organization")
+    public List<TopBill> getSellOrderList();
+
+    @Select("select * from bill_pairing where sellDate is not null and sellDate > #{topBill.date} order by sellDate asc LIMIT 1")
+    public BillPairing getBillPairOnSell(TopBill topBill);
 }
+

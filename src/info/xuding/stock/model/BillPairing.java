@@ -1,22 +1,33 @@
 package info.xuding.stock.model;
 
-import java.util.Date;
-
-public class StockTransaction {
+public class BillPairing {
 
     int id;
+
     String stockCode;
+
     String stockName;
+
     String organization;
-    Date buyDate;
+
+    String buyDate;
+
     double buyPrice;
+
     double buyAmount;
+
     double buyPiece;
-    Date sellDate;
+
+    String sellDate;
+
     double sellPrice;
+
     double sellAmount;
+
     double sellPiece;
+
     double priceRange;
+
     int days;
 
     public int getId() {
@@ -51,11 +62,11 @@ public class StockTransaction {
         this.organization = organization;
     }
 
-    public Date getBuyDate() {
+    public String getBuyDate() {
         return buyDate;
     }
 
-    public void setBuyDate(Date buyDate) {
+    public void setBuyDate(String buyDate) {
         this.buyDate = buyDate;
     }
 
@@ -83,11 +94,11 @@ public class StockTransaction {
         this.buyPiece = buyPiece;
     }
 
-    public Date getSellDate() {
+    public String getSellDate() {
         return sellDate;
     }
 
-    public void setSellDate(Date sellDate) {
+    public void setSellDate(String sellDate) {
         this.sellDate = sellDate;
     }
 
