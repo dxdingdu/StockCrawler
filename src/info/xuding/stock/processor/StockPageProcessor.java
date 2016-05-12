@@ -1,4 +1,4 @@
-package info.xuding.stock.service;
+package info.xuding.stock.processor;
 
 import java.util.List;
 
