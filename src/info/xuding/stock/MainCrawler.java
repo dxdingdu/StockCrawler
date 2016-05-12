@@ -12,7 +12,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import info.xuding.stock.dao.StockDao;
-import info.xuding.stock.processor.StockPageProcessor;
+import info.xuding.stock.service.StockPageProcessor;
 import us.codecraft.webmagic.Spider;
 
 /**
