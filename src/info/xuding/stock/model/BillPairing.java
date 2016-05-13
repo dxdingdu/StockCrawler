@@ -1,58 +1,33 @@
 package info.xuding.stock.model;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-
-@Entity
-@Table(name = "bill_pairing")
 public class BillPairing {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
     int id;
 
-    @Column(name = "stockCode")
     String stockCode;
 
-    @Column(name = "stockName")
     String stockName;
 
-    @Column(name = "organization")
     String organization;
 
-    @Column(name = "buyDate")
     String buyDate;
 
-    @Column(name = "buyPrice")
     double buyPrice;
 
-    @Column(name = "buyAmount")
     double buyAmount;
 
-    @Column(name = "buyPiece")
     double buyPiece;
 
-    @Column(name = "sellDate")
     String sellDate;
 
-    @Column(name = "sellPrice")
     double sellPrice;
 
-    @Column(name = "sellAmount")
     double sellAmount;
 
-    @Column(name = "sellPiece")
     double sellPiece;
 
-    @Column(name = "priceRange")
     double priceRange;
 
-    @Column(name = "days")
     int days;
 
     public int getId() {

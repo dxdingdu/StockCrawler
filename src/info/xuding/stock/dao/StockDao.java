@@ -35,3 +35,4 @@ public interface StockDao {
     @Select("select * from bill_pairing where sellDate is not null and sellDate > #{topBill.date} order by sellDate asc LIMIT 1")
     public BillPairing getBillPairOnSell(TopBill topBill);
 }
+
