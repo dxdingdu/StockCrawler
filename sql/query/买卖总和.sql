@@ -1,0 +1,1 @@
+select sum(buyAmount), SUM(sellAmount), date from topbill_price GROUP BY date ORDER BY date DESC
